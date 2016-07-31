@@ -1,3 +1,4 @@
+![img](IMG/iic.png)
 
 ```
 $ git clone https://github.com/ARMinARM/stm32flash
