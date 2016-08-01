@@ -18,7 +18,7 @@
 #define LED1 BIT_ADDR((GPIOD_BASE+12), 2)
 //=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_
 
-#define IIC_DELAY() delay(1);
+#define IIC_DELAY() {I2C_delay(30);}
 
 //=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_
 
@@ -64,6 +64,9 @@ void initLED() {
 }
 void delay(volatile unsigned int count) {
     for(count *= 12000; count!=0; count--);
+}
+void I2C_delay(unsigned char i) {
+    while (i) i--;
 }
 
 void IIC_init() {
