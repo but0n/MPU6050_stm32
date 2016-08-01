@@ -47,4 +47,4 @@ dump:
 	open DUMP.s
 	say "Bazinga"
 tty:
-	sudo screen /dev/ttyUSB0
+	sudo screen /dev/ttyUSB0 115200

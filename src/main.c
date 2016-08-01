@@ -261,7 +261,7 @@ void showData(short k) {
 
 int main() {
     initLED();
-    initUART(72, 9600);
+    initUART(72, 115200);
 
     MPU_init();
 
@@ -269,35 +269,38 @@ int main() {
     //USART1->DR = 'A';
     //while((USART1->SR & 0x40)==1);
 
+    GYRO_x = 0;
+    short x = 0;
     while(1) {
         GYRO_x = MPU_GetData(ACCEL_XOUT_H);
         GYRO_x /= 16.4;
+        x += GYRO_x;
         sendData_uart('X');
         sendData_uart(':');
-        showData(GYRO_x);
+        showData(x);
 
-        GYRO_y = MPU_GetData(ACCEL_YOUT_H);
-        GYRO_y /= 16.4;
-        sendData_uart('Y');
-        sendData_uart(':');
-        showData(GYRO_y);
+        //GYRO_y = MPU_GetData(ACCEL_YOUT_H);
+        //GYRO_y /= 16.4;
+        //sendData_uart('Y');
+        //sendData_uart(':');
+        //showData(GYRO_y);
 
-        GYRO_z = MPU_GetData(ACCEL_ZOUT_H);
-        GYRO_z /= 16.4;
-        sendData_uart('Z');
-        sendData_uart(':');
-        showData(GYRO_z);
+        //GYRO_z = MPU_GetData(ACCEL_ZOUT_H);
+        //GYRO_z /= 16.4;
+        //sendData_uart('Z');
+        //sendData_uart(':');
+        //showData(GYRO_z);
 
         sendData_uart(0x0D);
         sendData_uart(0x0A);
 
-        short tem = MPU_GetData(TEMP_OUT_H);
-        tem = 35 + ((double) (tem + 13200)) / 200;
-        showData(tem);
-        sendData_uart('T');
-        sendData_uart(':');
-        sendData_uart(0x0D);
-        sendData_uart(0x0A);
+        //short tem = MPU_GetData(TEMP_OUT_H);
+        //tem = 35 + ((double) (tem + 13200)) / 200;
+        //showData(tem);
+        //sendData_uart('T');
+        //sendData_uart(':');
+        //sendData_uart(0x0D);
+        //sendData_uart(0x0A);
 
     }
 }
