@@ -9,8 +9,6 @@
 #define SDA BIT_ADDR((GPIOB_BASE+12), 13)
 #define AD0 BIT_ADDR((GPIOC_BASE+12), 6)
 
-#define SDA_IN() {GPIOB->CRH&=0xFF0FFFFF;GPIOB->CRH|=0x00700000;}
-#define SDA_OUT() {GPIOB->CRH&=0xFF0FFFFF;GPIOB->CRH|=0x00700000;}
 
 #define GPIOB_IDR_Addr (GPIOB_BASE + 8)
 #define READ_SDA BIT_ADDR(GPIOB_IDR_Addr, 13)
@@ -19,6 +17,8 @@
 #define LED0 BIT_ADDR((GPIOA_BASE+12), 8)
 #define LED1 BIT_ADDR((GPIOD_BASE+12), 2)
 //=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_
+
+#define IIC_DELAY() delay(5);
 
 //=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_
 
@@ -51,14 +51,13 @@
 
 //=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_
 
-unsigned char cache[14];
-short GYRO_x, GYRO_y, GYRO_z;
+typedef struct {
+    short x;
+    short y;
+    short z;
+}data_TypeDef;
 
 void initLED() {
-    RCC->APB2ENR |= 1<<2;
-    GPIOA->CRH &= 0xFFFFFFF0;
-    GPIOA->CRH |= 0x00000003;
-
     RCC->APB2ENR |= 1<<5;
     GPIOD->CRL &= 0xFFFFF0FF;
     GPIOD->CRL |= 0x00000300;
@@ -79,49 +78,45 @@ void IIC_init() {
     AD0 = 0;
 }
 void IIC_Start() {
-    SDA_OUT();
     SDA = 1;
     SCL = 1;
-    delay(5);
+    IIC_DELAY();
     SDA = 0;
-    delay(5);
+    IIC_DELAY();
     SCL = 0;
 }
 void IIC_Stop() {
-    SDA_OUT();
     SCL = 0;
-    delay(5);
+    IIC_DELAY();
     SDA = 0;
-    delay(5);
+    IIC_DELAY();
     SCL = 1;
-    delay(5);
+    IIC_DELAY();
     SDA = 1;
-    delay(5);
+    IIC_DELAY();
 }
 void IIC_Ack(unsigned char ack) {
-    SDA_OUT();
 
     SCL = 0;
-    delay(5);
+    IIC_DELAY();
     SDA = ack;
-    delay(5);
+    IIC_DELAY();
     SCL = 1;
-    delay(5);
+    IIC_DELAY();
     SCL = 0;
-    delay(5);
+    IIC_DELAY();
 }
 unsigned char IIC_Wait_Ack() {
-    SDA_IN();
 
     SCL = 0;
-    delay(5);
+    IIC_DELAY();
     SDA = 1;
-    delay(5);
+    IIC_DELAY();
     SCL = 1;
-    delay(5);
+    IIC_DELAY();
     if(READ_SDA) {
         SCL = 0;
-        delay(5);
+        IIC_DELAY();
         return 0;
     }
 
@@ -133,28 +128,26 @@ unsigned char IIC_Wait_Ack() {
 
 void IIC_Send(unsigned char dat) {
     unsigned char i;
-    SDA_OUT();
     SCL = 0;
     for(i = 0; i < 8; i++) {
-        delay(5);
+        IIC_DELAY();
         SDA = (dat&0x80)>>7;
         dat <<= 1;
-        delay(5);
+        IIC_DELAY();
         SCL = 1;
-        delay(5);
+        IIC_DELAY();
         SCL = 0;
     }
 }
 
 unsigned char IIC_Read() {
     unsigned char i, dat = 0;
-    SDA_IN();
     SDA = 1;
     for(i = 0; i < 8; i++) {
         SCL = 0;
-        delay(5);
+        IIC_DELAY();
         SCL = 1;
-        delay(5);
+        IIC_DELAY();
         dat<<=1;
         dat |= READ_SDA;
     }
@@ -176,7 +169,6 @@ void MPU_Sigle_Write(unsigned char reg_addr, unsigned char reg_data) {
 
     IIC_Stop();
 
-    delay(5);
 }
 unsigned char MPU_Sigle_Read(unsigned reg_addr) {
     unsigned char reg_data;
@@ -259,6 +251,12 @@ void showData(short k) {
     sendData_uart('.');
 }
 
+void MPU6050_getStructData(data_TypeDef *cache, unsigned char reg_addr) {
+    cache->x = MPU_GetData(reg_addr)/16.4;
+    cache->y = MPU_GetData(reg_addr + 2)/16.4;
+    cache->z = MPU_GetData(reg_addr + 4)/16.4;
+}
+
 int main() {
     initLED();
     initUART(72, 115200);
@@ -266,18 +264,16 @@ int main() {
     MPU_init();
 
 
-    //USART1->DR = 'A';
-    //while((USART1->SR & 0x40)==1);
-
-    GYRO_x = 0;
-    short x = 0;
     while(1) {
-        GYRO_x = MPU_GetData(ACCEL_XOUT_H);
-        GYRO_x /= 16.4;
-        x += GYRO_x;
+        //GYRO_x = MPU_GetData(ACCEL_XOUT_H);
+        //GYRO_x /= 16.4;
+        //x += GYRO_x;
+
+        data_TypeDef GYRO;
+        MPU6050_getStructData(&GYRO, GYRO_XOUT_H);
         sendData_uart('X');
         sendData_uart(':');
-        showData(x);
+        showData(GYRO.x);
 
         //GYRO_y = MPU_GetData(ACCEL_YOUT_H);
         //GYRO_y /= 16.4;
