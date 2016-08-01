@@ -18,7 +18,7 @@
 #define LED1 BIT_ADDR((GPIOD_BASE+12), 2)
 //=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_
 
-#define IIC_DELAY() delay(1);
+#define IIC_DELAY() {I2Cdelay(30);}
 
 //=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_
 
@@ -64,6 +64,10 @@ void initLED() {
 }
 void delay(volatile unsigned int count) {
     for(count *= 12000; count!=0; count--);
+}
+
+void I2Cdelay(unsigned char i) {
+    while(i) i--;
 }
 
 void IIC_init() {
@@ -270,25 +274,45 @@ int main() {
         //x += GYRO_x;
 
         data_TypeDef GYRO;
+        data_TypeDef ACCEL;
+
         MPU6050_getStructData(&GYRO, GYRO_XOUT_H);
+
         sendData_uart('X');
         sendData_uart(':');
         showData(GYRO.x);
+        sendData_uart(' ');
 
-        //GYRO_y = MPU_GetData(ACCEL_YOUT_H);
-        //GYRO_y /= 16.4;
-        //sendData_uart('Y');
-        //sendData_uart(':');
-        //showData(GYRO_y);
+        sendData_uart('Y');
+        sendData_uart(':');
+        showData(GYRO.y);
+        sendData_uart(' ');
 
-        //GYRO_z = MPU_GetData(ACCEL_ZOUT_H);
-        //GYRO_z /= 16.4;
-        //sendData_uart('Z');
-        //sendData_uart(':');
-        //showData(GYRO_z);
+        sendData_uart('Z');
+        sendData_uart(':');
+        showData(GYRO.z);
+        sendData_uart(' ');
+
+        MPU6050_getStructData(&ACCEL, ACCEL_XOUT_H);
+
+        sendData_uart('X');
+        sendData_uart(':');
+        showData(ACCEL.x);
+        sendData_uart(' ');
+
+        sendData_uart('Y');
+        sendData_uart(':');
+        showData(ACCEL.y);
+        sendData_uart(' ');
+
+        sendData_uart('Z');
+        sendData_uart(':');
+        showData(ACCEL.z);
+        sendData_uart(' ');
 
         sendData_uart(0x0D);
         sendData_uart(0x0A);
+        delay(300);
 
         //short tem = MPU_GetData(TEMP_OUT_H);
         //tem = 35 + ((double) (tem + 13200)) / 200;
