@@ -10,3 +10,6 @@
 #define GPIOB_IDR_Addr (GPIOB_BASE + 8)
 #define READ_SDA BIT_ADDR(GPIOB_IDR_Addr, 13)
 ```
+
+![img](IMG/Faster.png)
+Speed Upgrade to 500kHz~1Mhz
