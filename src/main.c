@@ -18,7 +18,7 @@
 #define LED1 BIT_ADDR((GPIOD_BASE+12), 2)
 //=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_
 
-#define IIC_DELAY() {I2C_delay(30);}
+#define IIC_DELAY() {delay_us(1);}
 
 //=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_
 
@@ -62,11 +62,15 @@ void initLED() {
     GPIOD->CRL &= 0xFFFFF0FF;
     GPIOD->CRL |= 0x00000300;
 }
+//ms
 void delay(volatile unsigned int count) {
     for(count *= 12000; count!=0; count--);
 }
-void I2C_delay(unsigned char i) {
+void I2C_delay(unsigned short i) {
     while (i) i--;
+}
+void delay_us(volatile unsigned int nus) {
+    for(nus *= 4; nus; nus--);
 }
 
 void IIC_init() {
@@ -124,7 +128,6 @@ unsigned char IIC_Wait_Ack() {
     }
 
     SCL = 0;
-    LED1 = 0;
     return 1;
 
 }
@@ -205,6 +208,8 @@ void MPU_init() {
     MPU_Sigle_Write(CONFIG, 0x06);
     MPU_Sigle_Write(GYRO_CONFIG, 0x18);
     MPU_Sigle_Write(ACCEL_CONFIG, 0x01);
+
+    LED1 = MPU_Sigle_Read(WHO_AM_I) == 0x68?0:1;
 }
 
 void initUART(unsigned int pclk2, unsigned int bound) {
@@ -276,6 +281,7 @@ int main() {
         data_TypeDef ACCEL;
 
         MPU6050_getStructData(&GYRO, GYRO_XOUT_H);
+        while(1);
 
         sendData_uart('X');
         sendData_uart(':');
