@@ -14,8 +14,8 @@
 ![img](IMG/Faster.png)
 Speed Upgrade to 500kHz~1Mhz
 
+# Connect Status
+
 ```
     LED1 = MPU_Sigle_Read(WHO_AM_I) == 0x68?0:1;
 ```
-
-Connect Status
