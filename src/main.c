@@ -1,8 +1,6 @@
 #include "stm32f10x.h"
 #include "dmp.h"
-
-#define BITBAND(addr, bitnum) ((addr & 0xF0000000) + 0x2000000 + ((addr & 0xFFFFF) << 5) + (bitnum<<2))
-#define BIT_ADDR(addr, bitnum) *((volatile unsigned long *)(BITBAND(addr, bitnum)))
+#include "bit.h"
 
 #define GPIOA_ODR_Addr (GPIOA_BASE + 12)
 
