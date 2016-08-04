@@ -18,6 +18,7 @@ libstm32.a:
 			-I../../CMSIS/Include \
 			-I../../CMSIS/Device/ST/STM32F10x/Include \
 			-I../inc \
+			-I../../../../../inc \
 			*.c
 #	@cd $(STMLIB)/STM32_USB-FS-Device_Driver/src && \
 #	$(CC) $(CFLAGSlib) \
