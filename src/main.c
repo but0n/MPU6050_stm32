@@ -58,10 +58,6 @@ void delay(volatile unsigned int count) {
     for(count *= 12000; count!=0; count--);
 }
 
-void delay_us(volatile unsigned int nus) {
-    for(nus *= 4; nus; nus--);
-}
-
 void MPU_Sigle_Write(unsigned char reg_addr, unsigned char reg_data) {
     IIC_Start();
     IIC_Send(MPU6050_ADDR);

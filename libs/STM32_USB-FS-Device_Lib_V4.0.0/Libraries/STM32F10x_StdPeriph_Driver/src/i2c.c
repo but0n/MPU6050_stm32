@@ -1,5 +1,10 @@
 #include "i2c.h"
 
+
+void delay_us(volatile unsigned int nus) {
+    for(nus *= 4; nus; nus--);
+}
+
 void IIC_init() {
     RCC->APB2ENR |= 1<<3;
     GPIOB->CRH &= 0x0F0FFFFF;

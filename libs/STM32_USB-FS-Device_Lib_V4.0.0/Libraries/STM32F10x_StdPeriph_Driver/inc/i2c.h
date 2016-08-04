@@ -1,4 +1,5 @@
 #include "stm32f10x.h"
+#include "bit.h"
 #pragma once
 
 #ifndef _I2C_
@@ -16,6 +17,7 @@
 
 
 
+void delay_us(volatile unsigned int nus);
 
 void IIC_init();
 void IIC_Start();
