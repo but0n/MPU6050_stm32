@@ -4,19 +4,8 @@
 #include "i2c.h"
 #include "mpu6050.h"
 
-//=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_
-#define GPIOA_ODR_Addr (GPIOA_BASE + 12)
-
-#define LED0 BIT_ADDR((GPIOA_BASE+12), 8)
-#define LED1 BIT_ADDR((GPIOD_BASE+12), 2)
-//=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_
 
 
-void initLED() {
-    RCC->APB2ENR |= 1<<5;
-    GPIOD->CRL &= 0xFFFFF0FF;
-    GPIOD->CRL |= 0x00000300;
-}
 //ms
 void delay(volatile unsigned int count) {
     for(count *= 12000; count!=0; count--);
