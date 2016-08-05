@@ -67,42 +67,42 @@ int main() {
 
     while(1) {
 
-        data_TypeDef GYRO;
-        data_TypeDef ACCEL;
+        data_TypeDef Gyro;
+        data_TypeDef Accel;
 
-        MPU6050_getStructData(&GYRO, GYRO_XOUT_H);
-        while(1);
+        MPU6050_getStructData(&Gyro, GYRO_XOUT_H);
+        //while(1);
 
         sendData_uart('X');
         sendData_uart(':');
-        showData(GYRO.x);
+        showData(Gyro.x);
         sendData_uart(' ');
 
         sendData_uart('Y');
         sendData_uart(':');
-        showData(GYRO.y);
+        showData(Gyro.y);
         sendData_uart(' ');
 
         sendData_uart('Z');
         sendData_uart(':');
-        showData(GYRO.z);
+        showData(Gyro.z);
         sendData_uart(' ');
 
-        MPU6050_getStructData(&ACCEL, ACCEL_XOUT_H);
+        MPU6050_getStructData(&Accel, ACCEL_XOUT_H);
 
         sendData_uart('X');
         sendData_uart(':');
-        showData(ACCEL.x);
+        showData(Accel.x);
         sendData_uart(' ');
 
         sendData_uart('Y');
         sendData_uart(':');
-        showData(ACCEL.y);
+        showData(Accel.y);
         sendData_uart(' ');
 
         sendData_uart('Z');
         sendData_uart(':');
-        showData(ACCEL.z);
+        showData(Accel.z);
         sendData_uart(' ');
 
         sendData_uart(0x0D);
