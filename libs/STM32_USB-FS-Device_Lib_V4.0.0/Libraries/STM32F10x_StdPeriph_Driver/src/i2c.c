@@ -1,6 +1,6 @@
-#include "stm32f10x.h"
-
 #include "i2c.h"
+
+#include "stm32f10x.h"
 #include "bit.h"
 
 void delay_us(volatile unsigned int nus) {

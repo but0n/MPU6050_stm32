@@ -45,9 +45,6 @@ void MPU_Sigle_Write(unsigned char reg_addr, unsigned char reg_data);
 unsigned char MPU_Sigle_Read(unsigned reg_addr);
 short MPU_GetData(unsigned char REG_Addr);
 void MPU_init();
-void initUART(unsigned int pclk2, unsigned int bound);
-void sendData_uart(unsigned char data);
-void showData(short k);
 void MPU6050_getStructData(data_TypeDef *cache, unsigned char reg_addr);
 
 #endif
