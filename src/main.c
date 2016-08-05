@@ -3,6 +3,7 @@
 #include "i2c.h"
 #include "mpu6050.h"
 
+#include "Euler.h"
 
 
 //ms
@@ -64,6 +65,7 @@ int main() {
 
     MPU_init();
 
+    Comput(0,0,0,0,0,0.4);
 
     while(1) {
 
