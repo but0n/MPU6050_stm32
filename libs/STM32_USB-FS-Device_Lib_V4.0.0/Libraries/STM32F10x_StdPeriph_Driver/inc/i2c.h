@@ -4,9 +4,6 @@
 #define _I2C_
 
 
-
-
-
 #define SCL BIT_ADDR((GPIOB_BASE+12), 15)
 #define SDA BIT_ADDR((GPIOB_BASE+12), 13)
 #define AD0 BIT_ADDR((GPIOC_BASE+12), 6)
