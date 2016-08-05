@@ -2,8 +2,7 @@
 #ifndef _MPU6050_
 #define _MPU6050_
 
-#include "i2c.h"
-
+void delay(volatile unsigned int count);
 //=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_
 
 #define MPU6050_ADDR 0xD0 //    0x68 >> 1

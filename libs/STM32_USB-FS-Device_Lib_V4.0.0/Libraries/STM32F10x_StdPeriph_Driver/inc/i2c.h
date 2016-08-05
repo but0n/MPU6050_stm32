@@ -3,8 +3,7 @@
 #ifndef _I2C_
 #define _I2C_
 
-#include "stm32f10x.h"
-#include "bit.h"
+
 
 
 #define SCL BIT_ADDR((GPIOB_BASE+12), 15)

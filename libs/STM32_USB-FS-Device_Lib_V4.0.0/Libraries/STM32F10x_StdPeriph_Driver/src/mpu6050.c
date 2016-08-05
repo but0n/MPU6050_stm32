@@ -1,5 +1,7 @@
 #include "mpu6050.h"
 
+#include "i2c.h"
+
 void MPU_Sigle_Write(unsigned char reg_addr, unsigned char reg_data) {
     IIC_Start();
     IIC_Send(MPU6050_ADDR);
