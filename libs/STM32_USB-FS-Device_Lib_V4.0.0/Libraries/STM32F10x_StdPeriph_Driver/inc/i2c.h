@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef _I2C_
-#define _I2C_
+#ifndef _I2C_H_
+#define _I2C_H_
 
 
 #define SCL BIT_ADDR((GPIOB_BASE+12), 15)
