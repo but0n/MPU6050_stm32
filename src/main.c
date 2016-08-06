@@ -4,6 +4,7 @@
 #include "i2c.h"
 #include "mpu6050.h"
 
+#define A_Y_OFFSET 11
 
 
 #define Kp      100.0f      //比例增益支配率(常量)
@@ -76,6 +77,10 @@ unsigned char Float2Char(float value) {
 
     char array[8] = {0,0,0,0,0,0,0};
 
+    if(value < 0 ) {
+        value = value * -1;
+        sendData_uart('-');
+    }
     if(value >= 1) {
         IntegerPart = (unsigned char)value;
         DecimalPart = value - IntegerPart;
@@ -114,8 +119,6 @@ unsigned char Float2Char(float value) {
     for(j = 0; j < i; j ++) {
         sendData_uart(array[j]);
     }
-    sendData_uart(0x0D);
-    sendData_uart(0x0A);
 
     return i;
 }
@@ -127,16 +130,13 @@ void Comput(float gx, float gy, float gz, float ax, float ay, float az) {
     float ex, ey, ez;
 
     norm = sqrt(ax*ax + ay*ay + az*az);     //取模
-    Float2Char(norm);
+
 
     //向量化
     ax = ax / norm;
     ay = ay / norm;
     az = az / norm;
 
-    Float2Char(ax);
-    Float2Char(ay);
-    Float2Char(az);
 
     //估计方向的重力
     vx = 2 * (q1 * q3 - q0 * q2);
@@ -173,6 +173,7 @@ void Comput(float gx, float gy, float gz, float ax, float ay, float az) {
 
     Pitch = asin(-2 * q1 * q3 + 2 * q0 * q2) * 57.3;
     Roll = atan2(2 * q2 * q3 + 2 * q0 * q1, -2 * q1*q1 - 2 * q2*q2 + 1) * 57.3;
+    Yaw = atan2(2 * (q1 * q2 + q0 * q3), q0*q0 + q1*q1 - q2*q2 - q3*q3) * 57.3;
 }
 
 
@@ -192,67 +193,42 @@ int main() {
 
         MPU6050_getStructData(&Gyro, GYRO_XOUT_H, 16.4f);
         MPU6050_getStructData(&Accel, ACCEL_XOUT_H, 1671.83f);
+        Accel.y += A_Y_OFFSET;
         Comput(Gyro.x, Gyro.y, Gyro.z, Accel.x, Accel.y, Accel.z);
 
-        //sendData_uart('P');
-        //sendData_uart('i');
-        //sendData_uart('t');
-        //sendData_uart('c');
-        //sendData_uart('h');
-        //sendData_uart(':');
-        //sendData_uart(' ');
+        sendData_uart('P');
+        sendData_uart('i');
+        sendData_uart('t');
+        sendData_uart('c');
+        sendData_uart('h');
+        sendData_uart(':');
+        sendData_uart(' ');
 
-        //Float2Char(q0);
-        //sendData_uart(' ');
+        Float2Char(Pitch);
+        sendData_uart(' ');
 
-        //sendData_uart('R');
-        //sendData_uart('o');
-        //sendData_uart('l');
-        //sendData_uart('l');
-        //sendData_uart(':');
-        //sendData_uart(' ');
+        sendData_uart('R');
+        sendData_uart('o');
+        sendData_uart('l');
+        sendData_uart('l');
+        sendData_uart(':');
+        sendData_uart(' ');
 
-        //Float2Char(q1);
+        Float2Char(Roll);
+        sendData_uart(' ');
 
-        //sendData_uart(0x0D);
-        //sendData_uart(0x0A);
+        sendData_uart('Y');
+        sendData_uart('a');
+        sendData_uart('w');
+        sendData_uart(':');
+        sendData_uart(' ');
 
-        //sendData_uart('X');
-        //sendData_uart(':');
-        //showData(Gyro.x);
-        //sendData_uart(' ');
+        Float2Char(Yaw);
 
-        //sendData_uart('Y');
-        //sendData_uart(':');
-        //showData(Gyro.y);
-        //sendData_uart(' ');
+        sendData_uart(0x0D);
+        sendData_uart(0x0A);
 
-        //sendData_uart('Z');
-        //sendData_uart(':');
-        //showData(Gyro.z);
-        //sendData_uart(' ');
-
-
-        //sendData_uart('X');
-        //sendData_uart(':');
-        //showData(Accel.x);
-        //sendData_uart(' ');
-
-        //sendData_uart('Y');
-        //sendData_uart(':');
-        //showData(Accel.y);
-        //sendData_uart(' ');
-
-        //sendData_uart('Z');
-        //sendData_uart(':');
-        //showData(Accel.z);
-        //sendData_uart(' ');
-
-        //sendData_uart(0x0D);
-        //sendData_uart(0x0A);
-
-
-        delay(300);
+        delay(100);
 
         //short tem = MPU_GetData(TEMP_OUT_H);
         //tem = 35 + ((double) (tem + 13200)) / 200;

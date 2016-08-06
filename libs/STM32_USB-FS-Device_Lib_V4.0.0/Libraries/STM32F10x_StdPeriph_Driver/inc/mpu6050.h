@@ -42,9 +42,9 @@ void delay(volatile unsigned int count);
 
 
 typedef struct {
-    short x;
-    short y;
-    short z;
+    float x;
+    float y;
+    float z;
 }data_TypeDef;
 
 void MPU_Sigle_Write(unsigned char reg_addr, unsigned char reg_data);
