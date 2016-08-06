@@ -156,13 +156,44 @@ int main() {
 
         showData(Roll);
 
-        sendData_uart(' ');
+        sendData_uart(0x0D);
+        sendData_uart(0x0A);
+
+        sendData_uart('X');
+        sendData_uart(':');
         showData(Gyro.x);
-        sendData_uart(',');
-        showData(q1);
+        sendData_uart(' ');
+
+        sendData_uart('Y');
+        sendData_uart(':');
+        showData(Gyro.y);
+        sendData_uart(' ');
+
+        sendData_uart('Z');
+        sendData_uart(':');
+        showData(Gyro.z);
+        sendData_uart(' ');
+
+
+        sendData_uart('X');
+        sendData_uart(':');
+        showData(Accel.x);
+        sendData_uart(' ');
+
+        sendData_uart('Y');
+        sendData_uart(':');
+        showData(Accel.y);
+        sendData_uart(' ');
+
+        sendData_uart('Z');
+        sendData_uart(':');
+        showData(Accel.z);
+        sendData_uart(' ');
 
         sendData_uart(0x0D);
         sendData_uart(0x0A);
+
+
         delay(300);
 
         //short tem = MPU_GetData(TEMP_OUT_H);
