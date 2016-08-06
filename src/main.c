@@ -97,7 +97,7 @@ void sendData_uart(unsigned char data) {
     USART1->DR = data;
     while((USART1->SR & 0x40) == 0);
 }
-void showData(short k) {
+void showData(float k) {
     unsigned char a, b, c, d, e;
 
     sendData_uart(k<0?'-':'+');
@@ -123,48 +123,34 @@ int main() {
 
     MPU_init();
 
-    Comput(0,0,0,0,0,0.4);
-
     while(1) {
 
         data_TypeDef Gyro;
         data_TypeDef Accel;
 
         MPU6050_getStructData(&Gyro, GYRO_XOUT_H);
-        //while(1);
-
-        sendData_uart('X');
-        sendData_uart(':');
-        showData(Gyro.x);
-        sendData_uart(' ');
-
-        sendData_uart('Y');
-        sendData_uart(':');
-        showData(Gyro.y);
-        sendData_uart(' ');
-
-        sendData_uart('Z');
-        sendData_uart(':');
-        showData(Gyro.z);
-        sendData_uart(' ');
-
         MPU6050_getStructData(&Accel, ACCEL_XOUT_H);
+        Comput(Gyro.x, Gyro.y, Gyro.z, Accel.x, Accel.y, Accel.z);
 
-        sendData_uart('X');
+        sendData_uart('P');
+        sendData_uart('i');
+        sendData_uart('t');
+        sendData_uart('c');
+        sendData_uart('h');
         sendData_uart(':');
-        showData(Accel.x);
         sendData_uart(' ');
 
-        sendData_uart('Y');
-        sendData_uart(':');
-        showData(Accel.y);
+        showData(Pitch);
         sendData_uart(' ');
 
-        sendData_uart('Z');
+        sendData_uart('R');
+        sendData_uart('o');
+        sendData_uart('l');
+        sendData_uart('l');
         sendData_uart(':');
-        showData(Accel.z);
         sendData_uart(' ');
 
+        showData(Roll);
         sendData_uart(0x0D);
         sendData_uart(0x0A);
         delay(300);

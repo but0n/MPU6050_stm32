@@ -61,7 +61,7 @@ void MPU_init() {
 }
 
 void MPU6050_getStructData(data_TypeDef *cache, unsigned char reg_addr) {
-    cache->x = MPU_GetData(reg_addr)/16.4;
-    cache->y = MPU_GetData(reg_addr + 2)/16.4;
-    cache->z = MPU_GetData(reg_addr + 4)/16.4;
+    cache->x = MPU_GetData(reg_addr);
+    cache->y = MPU_GetData(reg_addr + 2);
+    cache->z = MPU_GetData(reg_addr + 4);
 }
