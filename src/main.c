@@ -19,6 +19,54 @@ void delay(volatile unsigned int count) {
     for(count *= 12000; count!=0; count--);
 }
 
+void initUART(unsigned int pclk2, unsigned int bound) {
+    float temp;
+    unsigned short mantissa;
+    unsigned short fraction;
+    temp = (float)(pclk2*1000000)/(bound*16);
+    mantissa = temp;
+    fraction = (temp - mantissa) * 16;
+    mantissa <<= 4;
+    mantissa += fraction;
+    RCC->APB2ENR |= 1<<2;
+    RCC->APB2ENR |= 1<<14;
+
+    GPIOA->CRH &= 0xFFFFF00F;
+    GPIOA->CRH |= 0x000008B0;
+
+    RCC->APB2RSTR |= 1<<14;
+    RCC->APB2RSTR &= ~(1<<14);
+
+    USART1->BRR = mantissa;
+    USART1->CR1 |= 0x200C;
+
+    USART1->CR1 |= 1<<8;
+    USART1->CR1 |= 1<<5;
+}
+void sendData_uart(unsigned char data) {
+    USART1->DR = data;
+    while((USART1->SR & 0x40) == 0);
+}
+void showData(short k) {
+    unsigned char a, b, c, d, e;
+
+    sendData_uart(k<0?'-':'+');
+    if(k<0) k=-k;
+    e = (unsigned char)(k % 10);
+    d = (unsigned char)(k/10) % 10;
+    c = (unsigned char)(k/100) % 10;
+    b = (unsigned char)(k/1000) % 10;
+    a = (unsigned char)(k/10000);
+
+    sendData_uart(a+0x30);
+    sendData_uart(b+0x30);
+    sendData_uart(c+0x30);
+    sendData_uart(d+0x30);
+    sendData_uart(e+0x30);
+    sendData_uart('.');
+}
+
+
 void Comput(float gx, float gy, float gz, float ax, float ay, float az) {
 
     float norm;     //模
@@ -26,6 +74,9 @@ void Comput(float gx, float gy, float gz, float ax, float ay, float az) {
     float ex, ey, ez;
 
     norm = sqrt(ax*ax + ay*ay + az*az);     //取模
+    showData((short)norm);
+    sendData_uart(0x0D);
+    sendData_uart(0x0A);
     //向量化
     ax = ax / norm;
     ay = ay / norm;
@@ -69,53 +120,6 @@ void Comput(float gx, float gy, float gz, float ax, float ay, float az) {
 }
 
 
-void initUART(unsigned int pclk2, unsigned int bound) {
-    float temp;
-    unsigned short mantissa;
-    unsigned short fraction;
-    temp = (float)(pclk2*1000000)/(bound*16);
-    mantissa = temp;
-    fraction = (temp - mantissa) * 16;
-    mantissa <<= 4;
-    mantissa += fraction;
-    RCC->APB2ENR |= 1<<2;
-    RCC->APB2ENR |= 1<<14;
-
-    GPIOA->CRH &= 0xFFFFF00F;
-    GPIOA->CRH |= 0x000008B0;
-
-    RCC->APB2RSTR |= 1<<14;
-    RCC->APB2RSTR &= ~(1<<14);
-
-    USART1->BRR = mantissa;
-    USART1->CR1 |= 0x200C;
-
-    USART1->CR1 |= 1<<8;
-    USART1->CR1 |= 1<<5;
-}
-void sendData_uart(unsigned char data) {
-    USART1->DR = data;
-    while((USART1->SR & 0x40) == 0);
-}
-void showData(float k) {
-    unsigned char a, b, c, d, e;
-
-    sendData_uart(k<0?'-':'+');
-    if(k<0) k=-k;
-    e = (unsigned char)(k % 10);
-    d = (unsigned char)(k/10) % 10;
-    c = (unsigned char)(k/100) % 10;
-    b = (unsigned char)(k/1000) % 10;
-    a = (unsigned char)(k/10000);
-
-    sendData_uart(a+0x30);
-    sendData_uart(b+0x30);
-    sendData_uart(c+0x30);
-    sendData_uart(d+0x30);
-    sendData_uart(e+0x30);
-    sendData_uart('.');
-}
-
 
 int main() {
     initLED();
@@ -128,8 +132,8 @@ int main() {
         data_TypeDef Gyro;
         data_TypeDef Accel;
 
-        MPU6050_getStructData(&Gyro, GYRO_XOUT_H);
-        MPU6050_getStructData(&Accel, ACCEL_XOUT_H);
+        MPU6050_getStructData(&Gyro, GYRO_XOUT_H, 16.4f);
+        MPU6050_getStructData(&Accel, ACCEL_XOUT_H, 16384);
         Comput(Gyro.x, Gyro.y, Gyro.z, Accel.x, Accel.y, Accel.z);
 
         sendData_uart('P');
@@ -151,6 +155,12 @@ int main() {
         sendData_uart(' ');
 
         showData(Roll);
+
+        sendData_uart(' ');
+        showData(Gyro.x);
+        sendData_uart(',');
+        showData(q1);
+
         sendData_uart(0x0D);
         sendData_uart(0x0A);
         delay(300);

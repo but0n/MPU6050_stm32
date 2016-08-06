@@ -60,8 +60,8 @@ void MPU_init() {
     LED1 = MPU_Sigle_Read(WHO_AM_I) == 0x68?0:1;
 }
 
-void MPU6050_getStructData(data_TypeDef *cache, unsigned char reg_addr) {
-    cache->x = MPU_GetData(reg_addr);
-    cache->y = MPU_GetData(reg_addr + 2);
-    cache->z = MPU_GetData(reg_addr + 4);
+void MPU6050_getStructData(data_TypeDef *cache, unsigned char reg_addr, float sel) {
+    cache->x = MPU_GetData(reg_addr)/sel;
+    cache->y = MPU_GetData(reg_addr + 2)/sel;
+    cache->z = MPU_GetData(reg_addr + 4)/sel;
 }
