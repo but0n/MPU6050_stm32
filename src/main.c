@@ -7,12 +7,13 @@
 
 
 #define Kp      100.0f      //比例增益支配率(常量)
-#define Ki      0x002f      //积分增益支配率
-#define halfT   0x001f      //采样周期的一半
+#define Ki      0.002f      //积分增益支配率
+#define halfT   0.001f      //采样周期的一半
 
 float q0 = 1, q1 = 0, q2 = 0, q3 = 0;   //Quaternion
 float exInt = 0, eyInt = 0, ezInt = 0;
 float Yaw, Pitch, Roll;     //eular
+
 
 //ms
 void delay(volatile unsigned int count) {
@@ -66,12 +67,14 @@ void showData(short k) {
     sendData_uart('.');
 }
 
-void Float2Char(float value, char *array) {
+unsigned char Float2Char(float value) {
     unsigned char IntegerPart;
     float DecimalPart;
     unsigned char i = 0;
     unsigned char j = 0;
     char temp;
+
+    char array[8] = {0,0,0,0,0,0,0};
 
     if(value >= 1) {
         IntegerPart = (unsigned char)value;
@@ -107,6 +110,14 @@ void Float2Char(float value, char *array) {
     array[i++] = (unsigned int)(DecimalPart * 1000)%10 + '0';
     array[i++] = (unsigned int)(DecimalPart * 10000)%10 + '0';
     array[i++] = '\0';
+
+    for(j = 0; j < i; j ++) {
+        sendData_uart(array[j]);
+    }
+    sendData_uart(0x0D);
+    sendData_uart(0x0A);
+
+    return i;
 }
 
 void Comput(float gx, float gy, float gz, float ax, float ay, float az) {
@@ -116,19 +127,16 @@ void Comput(float gx, float gy, float gz, float ax, float ay, float az) {
     float ex, ey, ez;
 
     norm = sqrt(ax*ax + ay*ay + az*az);     //取模
-    char dat[4] = {0,0,0,0};
-    Float2Char(norm, dat);
-    sendData_uart(dat[0]);
-    sendData_uart(dat[1]);
-    sendData_uart(dat[2]);
-    sendData_uart(dat[3]);
-    sendData_uart(0x0D);
-    sendData_uart(0x0A);
+    Float2Char(norm);
 
     //向量化
     ax = ax / norm;
     ay = ay / norm;
     az = az / norm;
+
+    Float2Char(ax);
+    Float2Char(ay);
+    Float2Char(az);
 
     //估计方向的重力
     vx = 2 * (q1 * q3 - q0 * q2);
@@ -141,20 +149,20 @@ void Comput(float gx, float gy, float gz, float ax, float ay, float az) {
     ez = (ax * vy - ay * vx);
 
     //积分误差比例积分增益
-    exInt += ex * Ki;
-    eyInt += ey * Ki;
-    ezInt += ez * Ki;
+    exInt = exInt + ex * Ki;
+    eyInt = eyInt + ey * Ki;
+    ezInt = ezInt + ez * Ki;
 
     //调整后的陀螺仪测量
-    gx += Kp * ex + exInt;
-    gy += Kp * ey + exInt;
-    gz += Kp * ez + exInt;
+    gx = gx + Kp * ex + exInt;
+    gy = gy + Kp * ey + eyInt;
+    gz = gz + Kp * ez + ezInt;
 
     //整合四元数率和正常化
-    q0 += (-q1 * gx - q2 * gy - q3 * gz) * halfT;
-    q1 += (q0 * gx + q2 * gz - q3 * gy) * halfT;
-    q2 += (q0 * gy - q1 * gz + q3 * gx) * halfT;
-    q3 += (q0 * gz + q1 * gy - q2 * gx) * halfT;
+    q0 = q0 + (-q1 * gx - q2 * gy - q3 * gz) * halfT;
+    q1 = q1 + (q0 * gx + q2 * gz - q3 * gy) * halfT;
+    q2 = q2 + (q0 * gy - q1 * gz + q3 * gx) * halfT;
+    q3 = q3 + (q0 * gz + q1 * gy - q2 * gx) * halfT;
 
     //正常化四元
     norm = sqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);
@@ -178,80 +186,70 @@ int main() {
     data_TypeDef Gyro;
     data_TypeDef Accel;
 
-    char data_arry[4] = {0,0,0,0};
 
     while(1) {
 
 
         MPU6050_getStructData(&Gyro, GYRO_XOUT_H, 16.4f);
-        MPU6050_getStructData(&Accel, ACCEL_XOUT_H, 1671.83);
+        MPU6050_getStructData(&Accel, ACCEL_XOUT_H, 1671.83f);
         Comput(Gyro.x, Gyro.y, Gyro.z, Accel.x, Accel.y, Accel.z);
 
-        sendData_uart('P');
-        sendData_uart('i');
-        sendData_uart('t');
-        sendData_uart('c');
-        sendData_uart('h');
-        sendData_uart(':');
-        sendData_uart(' ');
+        //sendData_uart('P');
+        //sendData_uart('i');
+        //sendData_uart('t');
+        //sendData_uart('c');
+        //sendData_uart('h');
+        //sendData_uart(':');
+        //sendData_uart(' ');
 
-        Float2Char(q0, data_arry);
-        sendData_uart(data_arry[0]);
-        sendData_uart(data_arry[1]);
-        sendData_uart(data_arry[2]);
-        sendData_uart(data_arry[3]);
+        //Float2Char(q0);
+        //sendData_uart(' ');
 
-        sendData_uart(' ');
+        //sendData_uart('R');
+        //sendData_uart('o');
+        //sendData_uart('l');
+        //sendData_uart('l');
+        //sendData_uart(':');
+        //sendData_uart(' ');
 
-        sendData_uart('R');
-        sendData_uart('o');
-        sendData_uart('l');
-        sendData_uart('l');
-        sendData_uart(':');
-        sendData_uart(' ');
+        //Float2Char(q1);
 
-        Float2Char(q1, data_arry);
-        sendData_uart(data_arry[0]);
-        sendData_uart(data_arry[1]);
-        sendData_uart(data_arry[2]);
-        sendData_uart(data_arry[3]);
+        //sendData_uart(0x0D);
+        //sendData_uart(0x0A);
 
-        sendData_uart(0x0D);
-        sendData_uart(0x0A);
+        //sendData_uart('X');
+        //sendData_uart(':');
+        //showData(Gyro.x);
+        //sendData_uart(' ');
 
-        sendData_uart('X');
-        sendData_uart(':');
-        showData(Gyro.x);
-        sendData_uart(' ');
+        //sendData_uart('Y');
+        //sendData_uart(':');
+        //showData(Gyro.y);
+        //sendData_uart(' ');
 
-        sendData_uart('Y');
-        sendData_uart(':');
-        showData(Gyro.y);
-        sendData_uart(' ');
-
-        sendData_uart('Z');
-        sendData_uart(':');
-        showData(Gyro.z);
-        sendData_uart(' ');
+        //sendData_uart('Z');
+        //sendData_uart(':');
+        //showData(Gyro.z);
+        //sendData_uart(' ');
 
 
-        sendData_uart('X');
-        sendData_uart(':');
-        showData(Accel.x);
-        sendData_uart(' ');
+        //sendData_uart('X');
+        //sendData_uart(':');
+        //showData(Accel.x);
+        //sendData_uart(' ');
 
-        sendData_uart('Y');
-        sendData_uart(':');
-        showData(Accel.y);
-        sendData_uart(' ');
+        //sendData_uart('Y');
+        //sendData_uart(':');
+        //showData(Accel.y);
+        //sendData_uart(' ');
 
-        sendData_uart('Z');
-        sendData_uart(':');
-        showData(Accel.z);
-        sendData_uart(' ');
+        //sendData_uart('Z');
+        //sendData_uart(':');
+        //showData(Accel.z);
+        //sendData_uart(' ');
 
-        sendData_uart(0x0D);
-        sendData_uart(0x0A);
+        //sendData_uart(0x0D);
+        //sendData_uart(0x0A);
 
 
         delay(300);
