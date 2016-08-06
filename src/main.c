@@ -66,6 +66,48 @@ void showData(short k) {
     sendData_uart('.');
 }
 
+void Float2Char(float value, char *array) {
+    unsigned char IntegerPart;
+    float DecimalPart;
+    unsigned char i = 0;
+    unsigned char j = 0;
+    char temp;
+
+    if(value >= 1) {
+        IntegerPart = (unsigned char)value;
+        DecimalPart = value - IntegerPart;
+    }
+    else {
+        IntegerPart = 0;
+        DecimalPart = value - IntegerPart;
+    }
+    if(IntegerPart == 0) {
+        array[0] = '0';
+        array[1] = '.';
+        i = 1;
+    }
+    else {
+        while(IntegerPart > 0) {
+            array[i] = IntegerPart%10 + '0';
+            IntegerPart/=10;
+            i++;
+        }
+        i--;
+        for(j = 0; j < i; j++) {
+            temp = array[j];
+            array[j] = array[i-j];
+            array[i-j] = temp;
+        }
+        i++;
+        array[i] = '.';
+    }
+    i++;
+    array[i++] = (unsigned int)(DecimalPart * 10)%10 + '0';
+    array[i++] = (unsigned int)(DecimalPart * 100)%10 + '0';
+    array[i++] = (unsigned int)(DecimalPart * 1000)%10 + '0';
+    array[i++] = (unsigned int)(DecimalPart * 10000)%10 + '0';
+    array[i++] = '\0';
+}
 
 void Comput(float gx, float gy, float gz, float ax, float ay, float az) {
 
@@ -74,9 +116,15 @@ void Comput(float gx, float gy, float gz, float ax, float ay, float az) {
     float ex, ey, ez;
 
     norm = sqrt(ax*ax + ay*ay + az*az);     //取模
-    showData((short)norm);
+    char dat[4] = {0,0,0,0};
+    Float2Char(norm, dat);
+    sendData_uart(dat[0]);
+    sendData_uart(dat[1]);
+    sendData_uart(dat[2]);
+    sendData_uart(dat[3]);
     sendData_uart(0x0D);
     sendData_uart(0x0A);
+
     //向量化
     ax = ax / norm;
     ay = ay / norm;
@@ -127,13 +175,16 @@ int main() {
 
     MPU_init();
 
+    data_TypeDef Gyro;
+    data_TypeDef Accel;
+
+    char data_arry[4] = {0,0,0,0};
+
     while(1) {
 
-        data_TypeDef Gyro;
-        data_TypeDef Accel;
 
         MPU6050_getStructData(&Gyro, GYRO_XOUT_H, 16.4f);
-        MPU6050_getStructData(&Accel, ACCEL_XOUT_H, 16384);
+        MPU6050_getStructData(&Accel, ACCEL_XOUT_H, 1671.83);
         Comput(Gyro.x, Gyro.y, Gyro.z, Accel.x, Accel.y, Accel.z);
 
         sendData_uart('P');
@@ -144,7 +195,12 @@ int main() {
         sendData_uart(':');
         sendData_uart(' ');
 
-        showData(Pitch);
+        Float2Char(q0, data_arry);
+        sendData_uart(data_arry[0]);
+        sendData_uart(data_arry[1]);
+        sendData_uart(data_arry[2]);
+        sendData_uart(data_arry[3]);
+
         sendData_uart(' ');
 
         sendData_uart('R');
@@ -154,7 +210,11 @@ int main() {
         sendData_uart(':');
         sendData_uart(' ');
 
-        showData(Roll);
+        Float2Char(q1, data_arry);
+        sendData_uart(data_arry[0]);
+        sendData_uart(data_arry[1]);
+        sendData_uart(data_arry[2]);
+        sendData_uart(data_arry[3]);
 
         sendData_uart(0x0D);
         sendData_uart(0x0A);
