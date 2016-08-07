@@ -181,38 +181,23 @@ int main() {
 
     initLED();
 
-    LED1 = 0;
 
     PWM_Init(7199,9);
 
-    unsigned short pwm_val = 0;
-    while(1) {
-        for(pwm_val = 0; pwm_val < 7200; pwm_val++) {
-            MOTOR1 = pwm_val;
-            delay(10);
-        }
-        for(pwm_val = 7200; pwm_val >0; pwm_val--) {
-            MOTOR1 = pwm_val;
-            delay(10);
-        }
-    }
 
-    initLED();
     initUART(72, 115200);
 
     MPU_init();
 
-    data_TypeDef Gyro;
-    data_TypeDef Accel;
+    data_TypeDef sourceData;
 
 
     while(1) {
 
 
-        MPU6050_getStructData(&Gyro, GYRO_XOUT_H, 16.4f);
-        MPU6050_getStructData(&Accel, ACCEL_XOUT_H, 1671.83f);
-        Accel.y += A_Y_OFFSET;
-        Comput(Gyro.x, Gyro.y, Gyro.z, Accel.x, Accel.y, Accel.z);
+        MPU6050_getStructData(&sourceData);
+
+        Comput(sourceData.gX, sourceData.gY, sourceData.gZ, sourceData.aX, sourceData.aY, sourceData.aZ);
 
         sendData_uart('P');
         sendData_uart('i');

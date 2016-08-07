@@ -6,7 +6,6 @@
 #define LED0 BIT_ADDR((GPIOA_BASE+12), 8)
 #define LED1 BIT_ADDR((GPIOD_BASE+12), 2)
 //=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_
-void initLED();
 
 void delay(volatile unsigned int count);
 //=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_
@@ -40,17 +39,11 @@ void delay(volatile unsigned int count);
 
 //=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_
 
-
-typedef struct {
-    float x;
-    float y;
-    float z;
-}data_TypeDef;
+#define A_Y_OFFSET 11
 
 void MPU_Sigle_Write(unsigned char reg_addr, unsigned char reg_data);
 unsigned char MPU_Sigle_Read(unsigned reg_addr);
 short MPU_GetData(unsigned char REG_Addr);
 void MPU_init();
-void MPU6050_getStructData(data_TypeDef *cache, unsigned char reg_addr, float sel);
-
+void MPU6050_getStructData(data_TypeDef *cache) {
 #endif

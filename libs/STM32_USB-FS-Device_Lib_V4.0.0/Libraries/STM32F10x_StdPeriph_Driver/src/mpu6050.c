@@ -4,11 +4,15 @@
 #include "stm32f10x.h"
 #include "i2c.h"
 
-void initLED() {
-    RCC->APB2ENR |= 1<<5;
-    GPIOD->CRL &= 0xFFFFF0FF;
-    GPIOD->CRL |= 0x00000300;
-}
+typedef struct {
+    float gX;
+    float gY;
+    float gZ;
+    float aX;
+    float aY;
+    float aZ;
+}data_TypeDef;
+
 
 void MPU_Sigle_Write(unsigned char reg_addr, unsigned char reg_data) {
     IIC_Start();
@@ -60,8 +64,15 @@ void MPU_init() {
     LED1 = MPU_Sigle_Read(WHO_AM_I) == 0x68?0:1;
 }
 
-void MPU6050_getStructData(data_TypeDef *cache, unsigned char reg_addr, float sel) {
-    cache->x = (float)MPU_GetData(reg_addr)/sel;
-    cache->y = (float)MPU_GetData(reg_addr + 2)/sel;
-    cache->z = (float)MPU_GetData(reg_addr + 4)/sel;
+void MPU6050_getStructData(data_TypeDef *cache) {
+    cache->gX = (float)MPU_GetData(GYRO_XOUT_H)/16.4f;
+    cache->gY = (float)MPU_GetData(GYRO_YOUT_H)/16.4f;
+    cache->gZ = (float)MPU_GetData(GYRO_ZOUT_H)/16.4f;
+
+    cache->aX = (float)MPU_GetData(ACCEL_XOUT_H)/1671.83f;
+    cache->aY = (float)MPU_GetData(ACCEL_YOUT_H)/1671.83f;
+    cache->aZ = (float)MPU_GetData(ACCEL_ZOUT_H)/1671.83f;
+
+    cache->aY += A_Y_OFFSET;
+
 }
