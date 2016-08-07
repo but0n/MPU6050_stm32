@@ -1,8 +1,8 @@
 #include <math.h>
 #include "stm32f10x.h"
 #include "bit.h"
-#include "i2c.h"
 #include "mpu6050.h"
+#include "motor.h"
 
 #define A_Y_OFFSET 11
 
@@ -176,22 +176,6 @@ void Comput(float gx, float gy, float gz, float ax, float ay, float az) {
     Yaw = atan2(2 * (q1 * q2 + q0 * q3), q0*q0 + q1*q1 - q2*q2 - q3*q3) * 57.3;
 }
 
-void PWM_Init(unsigned short arr, unsigned short psc) {
-    RCC->APB2ENR |= 1<<11;
-    RCC->APB2ENR |= 1<<2;
-    GPIOA->CRH &= 0xFFFFFFF0;
-    GPIOA->CRH |= 0x0000000B;
-    GPIOA->ODR |= 1;
-    TIM1->ARR = arr;
-    TIM1->PSC = psc;
-    TIM1->CCMR1 |= 7<<4;
-    TIM1->CCMR1 |= 1<<3;
-    TIM1->CCER |= 1;
-    TIM1->CR1 = 0x80;
-    TIM1->CR1 |= 1;
-    TIM1->BDTR |= 1<<15;
-}
-#define AN_VAL TIM1->CCR1
 
 int main() {
 
@@ -199,16 +183,16 @@ int main() {
 
     LED1 = 0;
 
-    PWM_Init(899,0);
+    PWM_Init(7199,9);
 
     unsigned short pwm_val = 0;
     while(1) {
-        for(pwm_val = 0; pwm_val < 300; pwm_val++) {
-            AN_VAL = pwm_val;
+        for(pwm_val = 0; pwm_val < 7200; pwm_val++) {
+            MOTOR1 = pwm_val;
             delay(10);
         }
-        for(pwm_val = 300; pwm_val >0; pwm_val--) {
-            AN_VAL = pwm_val;
+        for(pwm_val = 7200; pwm_val >0; pwm_val--) {
+            MOTOR1 = pwm_val;
             delay(10);
         }
     }
