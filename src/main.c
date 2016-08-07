@@ -192,6 +192,24 @@ int main() {
 
 
     while(1) {
+        MPU6050_getStructData(&sourceData);
+        Comput(sourceData.gX, sourceData.gY, sourceData.gZ, sourceData.aX, sourceData.aY, sourceData.aZ);
+        if(Roll<0) Roll *= -1;
+        MOTOR1 = (unsigned short)Roll / 90 * 7199 + 2000;
+
+        sendData_uart('R');
+        sendData_uart('o');
+        sendData_uart('l');
+        sendData_uart('l');
+        sendData_uart(':');
+        sendData_uart(' ');
+
+        Float2Char(Roll);
+        sendData_uart(0x0D);
+        sendData_uart(0x0A);
+
+    }
+    while(1) {
 
 
         MPU6050_getStructData(&sourceData);
