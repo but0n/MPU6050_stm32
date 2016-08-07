@@ -189,22 +189,27 @@ void PWM_Init(unsigned short arr, unsigned short psc) {
     TIM1->CCER |= 1;
     TIM1->CR1 = 0x80;
     TIM1->CR1 |= 1;
+    TIM1->BDTR |= 1<<15;
 }
-
+#define AN_VAL TIM1->CCR1
 
 int main() {
 
+    initLED();
+
+    LED1 = 0;
 
     PWM_Init(899,0);
-    unsigned short pwm_val;
+
+    unsigned short pwm_val = 0;
     while(1) {
-        for(pwm_val = 0; pwm_val < 300; pwm_val+=5) {
-            TIM1->CCR1 = pwm_val;
-            delay(100);
+        for(pwm_val = 0; pwm_val < 300; pwm_val++) {
+            AN_VAL = pwm_val;
+            delay(10);
         }
-        for(pwm_val = 300; pwm_val > 0; pwm_val-=5) {
-             TIM->CCR1 = pwm_val;
-             delay(100);
+        for(pwm_val = 300; pwm_val >0; pwm_val--) {
+            AN_VAL = pwm_val;
+            delay(10);
         }
     }
 
