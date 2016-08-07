@@ -4,15 +4,12 @@
 #include "stm32f10x.h"
 #include "i2c.h"
 
-typedef struct {
-    float gX;
-    float gY;
-    float gZ;
-    float aX;
-    float aY;
-    float aZ;
-}data_TypeDef;
 
+void initLED() {
+    RCC->APB2ENR |= 1<<5;
+    GPIOD->CRL &= 0xFFFFF0FF;
+    GPIOD->CRL |= 0x00000300;
+}
 
 void MPU_Sigle_Write(unsigned char reg_addr, unsigned char reg_data) {
     IIC_Start();

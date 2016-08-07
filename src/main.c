@@ -4,7 +4,6 @@
 #include "mpu6050.h"
 #include "motor.h"
 
-#define A_Y_OFFSET 11
 
 
 #define Kp      100.0f      //比例增益支配率(常量)
