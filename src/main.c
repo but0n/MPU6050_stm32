@@ -176,9 +176,38 @@ void Comput(float gx, float gy, float gz, float ax, float ay, float az) {
     Yaw = atan2(2 * (q1 * q2 + q0 * q3), q0*q0 + q1*q1 - q2*q2 - q3*q3) * 57.3;
 }
 
+void PWM_Init(unsigned short arr, unsigned short psc) {
+    RCC->APB2ENR |= 1<<11;
+    RCC->APB2ENR |= 1<<2;
+    GPIOA->CRH &= 0xFFFFFFF0;
+    GPIOA->CRH |= 0x0000000B;
+    GPIOA->ODR |= 1;
+    TIM1->ARR = arr;
+    TIM1->PSC = psc;
+    TIM1->CCMR1 |= 7<<4;
+    TIM1->CCMR1 |= 1<<3;
+    TIM1->CCER |= 1;
+    TIM1->CR1 = 0x80;
+    TIM1->CR1 |= 1;
+}
 
 
 int main() {
+
+
+    PWM_Init(899,0);
+    unsigned short pwm_val;
+    while(1) {
+        for(pwm_val = 0; pwm_val < 300; pwm_val+=5) {
+            TIM1->CCR1 = pwm_val;
+            delay(100);
+        }
+        for(pwm_val = 300; pwm_val > 0; pwm_val-=5) {
+             TIM->CCR1 = pwm_val;
+             delay(100);
+        }
+    }
+
     initLED();
     initUART(72, 115200);
 
