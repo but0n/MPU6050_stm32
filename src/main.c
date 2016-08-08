@@ -14,6 +14,15 @@ float q0 = 1, q1 = 0, q2 = 0, q3 = 0;   //Quaternion
 float exInt = 0, eyInt = 0, ezInt = 0;
 float Yaw, Pitch, Roll;     //eular
 
+#define K_P 1.2f
+#define K_I 0
+#define K_D 0
+float iErro, sumErro;
+short pid(float setPoint) {
+    iErro = Roll - setPoint;
+    sumErro += iErro;
+    return (short)(iErro * K_P + sumErro * K_I);
+}
 
 //ms
 void delay(volatile unsigned int count) {
@@ -190,23 +199,14 @@ int main() {
 
     data_TypeDef sourceData;
 
+    unsigned short motorVal = 3000;
 
     while(1) {
         MPU6050_getStructData(&sourceData);
         Comput(sourceData.gX, sourceData.gY, sourceData.gZ, sourceData.aX, sourceData.aY, sourceData.aZ);
-        if(Roll<0) Roll *= -1;
-        MOTOR1 = (unsigned short)Roll / 90 * 7199 + 2000;
 
-        sendData_uart('R');
-        sendData_uart('o');
-        sendData_uart('l');
-        sendData_uart('l');
-        sendData_uart(':');
-        sendData_uart(' ');
-
-        Float2Char(Roll);
-        sendData_uart(0x0D);
-        sendData_uart(0x0A);
+        motorVal += pid(0);
+        MOTOR1 = motorVal;
 
     }
     while(1) {
