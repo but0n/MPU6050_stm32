@@ -14,10 +14,10 @@ float q0 = 1, q1 = 0, q2 = 0, q3 = 0;   //Quaternion
 float exInt = 0, eyInt = 0, ezInt = 0;
 float Yaw, Pitch, Roll;     //eular
 
-#define K_P 1.2f
+#define K_P 0.2f
 #define K_I 0
 #define K_D 0
-float iErro, sumErro;
+float iErro, sumErro = 0;
 short pid(float setPoint) {
     iErro = Roll - setPoint;
     sumErro += iErro;
@@ -199,14 +199,29 @@ int main() {
 
     data_TypeDef sourceData;
 
-    unsigned short motorVal = 3000;
+    short motorVal = 3000;
 
     while(1) {
         MPU6050_getStructData(&sourceData);
         Comput(sourceData.gX, sourceData.gY, sourceData.gZ, sourceData.aX, sourceData.aY, sourceData.aZ);
 
         motorVal += pid(0);
-        MOTOR1 = motorVal;
+        if(motorVal > 7199) motorVal = 7199;
+        else if(motorVal < 0) motorVal = 0;
+        MOTOR1 = (unsigned short)motorVal;
+        Float2Char((float)pid(0));
+        sendData_uart(' ');
+        sendData_uart('M');
+        sendData_uart(':');
+
+        showData(motorVal);
+
+        sendData_uart(' ');
+        sendData_uart('r');
+        sendData_uart(':');
+        Float2Char(Roll);
+        sendData_uart(0x0D);
+        sendData_uart(0x0A);
 
     }
     while(1) {
