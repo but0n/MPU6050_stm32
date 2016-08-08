@@ -189,9 +189,7 @@ int main() {
 
     initLED();
 
-
     PWM_Init(7199,9);
-
 
     initUART(72, 115200);
 
@@ -201,7 +199,7 @@ int main() {
 
     short motorVal = 3000;
 
-    while(1) {
+    while(0) {
         MPU6050_getStructData(&sourceData);
         Comput(sourceData.gX, sourceData.gY, sourceData.gZ, sourceData.aX, sourceData.aY, sourceData.aZ);
 
