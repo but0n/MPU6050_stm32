@@ -199,13 +199,13 @@ int main() {
 
     short motorVal = 3000;
 
-    while(0) {
+    while(1) {
         MPU6050_getStructData(&sourceData);
         Comput(sourceData.gX, sourceData.gY, sourceData.gZ, sourceData.aX, sourceData.aY, sourceData.aZ);
 
         motorVal += pid(0);
         if(motorVal > 7199) motorVal = 7199;
-        else if(motorVal < 0) motorVal = 0;
+        else if(motorVal < 1000) motorVal = 1000;
         MOTOR1 = (unsigned short)motorVal;
         Float2Char((float)pid(0));
         sendData_uart(' ');
