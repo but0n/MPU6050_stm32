@@ -131,19 +131,19 @@ unsigned char Float2Char(float value) {
     return i;
 }
 
-void Comput(float gx, float gy, float gz, float ax, float ay, float az) {
+void Comput(SixAxis cache) {
 
     float norm;     //模
     float vx, vy, vz;
     float ex, ey, ez;
 
-    norm = sqrt(ax*ax + ay*ay + az*az);     //取模
+    norm = sqrt(cache.aX*cache.aX + cache.aY*cache.aY + cache.aZ*cache.aZ);     //取模
 
 
     //向量化
-    ax = ax / norm;
-    ay = ay / norm;
-    az = az / norm;
+    cache.aX = cache.aX / norm;
+    cache.aY = cache.aY / norm;
+    cache.aZ = cache.aZ / norm;
 
 
     //估计方向的重力
@@ -152,9 +152,9 @@ void Comput(float gx, float gy, float gz, float ax, float ay, float az) {
     vz = q0*q0 - q1*q1 - q2*q2 + q3*q3;
 
     //错误的领域和方向传感器测量参考方向几件的交叉乘积的总和
-    ex = (ay * vz - az * vy);
-    ey = (az * vx - ax * vz);
-    ez = (ax * vy - ay * vx);
+    ex = (cache.aY * vz - cache.aZ * vy);
+    ey = (cache.aZ * vx - cache.aX * vz);
+    ez = (cache.aX * vy - cache.aY * vx);
 
     //积分误差比例积分增益
     exInt = exInt + ex * Ki;
@@ -162,15 +162,15 @@ void Comput(float gx, float gy, float gz, float ax, float ay, float az) {
     ezInt = ezInt + ez * Ki;
 
     //调整后的陀螺仪测量
-    gx = gx + Kp * ex + exInt;
-    gy = gy + Kp * ey + eyInt;
-    gz = gz + Kp * ez + ezInt;
+    cache.gX = cache.gX + Kp * ex + exInt;
+    cache.gY = cache.gY + Kp * ey + eyInt;
+    cache.gZ = cache.gZ + Kp * ez + ezInt;
 
     //整合四元数率和正常化
-    q0 = q0 + (-q1 * gx - q2 * gy - q3 * gz) * halfT;
-    q1 = q1 + (q0 * gx + q2 * gz - q3 * gy) * halfT;
-    q2 = q2 + (q0 * gy - q1 * gz + q3 * gx) * halfT;
-    q3 = q3 + (q0 * gz + q1 * gy - q2 * gx) * halfT;
+    q0 = q0 + (-q1 * cache.gX - q2 * cache.gY - q3 * cache.gZ) * halfT;
+    q1 = q1 + (q0 * cache.gX + q2 * cache.gZ - q3 * cache.gY) * halfT;
+    q2 = q2 + (q0 * cache.gY - q1 * cache.gZ + q3 * cache.gX) * halfT;
+    q3 = q3 + (q0 * cache.gZ + q1 * cache.gY - q2 * cache.gX) * halfT;
 
     //正常化四元
     norm = sqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);
@@ -195,13 +195,13 @@ int main() {
 
     MPU_init();
 
-    data_TypeDef sourceData;
+    SixAxis sourceData;
 
     short motorVal = 3000;
 
-    while(1) {
+    while(0) {
         MPU6050_getStructData(&sourceData);
-        Comput(sourceData.gX, sourceData.gY, sourceData.gZ, sourceData.aX, sourceData.aY, sourceData.aZ);
+        Comput(sourceData);
 
         motorVal += pid(0);
         if(motorVal > 7199) motorVal = 7199;
@@ -227,7 +227,7 @@ int main() {
 
         MPU6050_getStructData(&sourceData);
 
-        Comput(sourceData.gX, sourceData.gY, sourceData.gZ, sourceData.aX, sourceData.aY, sourceData.aZ);
+        Comput(sourceData);
 
         sendData_uart('P');
         sendData_uart('i');
@@ -263,13 +263,7 @@ int main() {
 
         delay(100);
 
-        //short tem = MPU_GetData(TEMP_OUT_H);
-        //tem = 35 + ((double) (tem + 13200)) / 200;
-        //showData(tem);
-        //sendData_uart('T');
-        //sendData_uart(':');
-        //sendData_uart(0x0D);
-        //sendData_uart(0x0A);
+
 
     }
 }

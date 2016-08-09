@@ -66,7 +66,7 @@ void MPU_init() {
     LED1 = MPU_Sigle_Read(WHO_AM_I) == 0x68?1:0;
 }
 
-void MPU6050_getStructData(data_TypeDef *cache) {
+void MPU6050_getStructData(pSixAxis cache) {
     cache->gX = (float)MPU_GetData(GYRO_XOUT_H)/16.4f;
     cache->gY = (float)MPU_GetData(GYRO_YOUT_H)/16.4f;
     cache->gZ = (float)MPU_GetData(GYRO_ZOUT_H)/16.4f;

@@ -42,19 +42,21 @@ void delay(volatile unsigned int count);
 #define A_Y_OFFSET 11
 
 
-typedef struct {
+struct SixAxis{
     float gX;
     float gY;
     float gZ;
     float aX;
     float aY;
     float aZ;
-}data_TypeDef;
+};
+typedef struct SixAxis* pSixAxis;
+
 
 void initLED();
 void MPU_Sigle_Write(unsigned char reg_addr, unsigned char reg_data);
 unsigned char MPU_Sigle_Read(unsigned reg_addr);
 short MPU_GetData(unsigned char REG_Addr);
 void MPU_init();
-void MPU6050_getStructData(data_TypeDef *cache);
+void MPU6050_getStructData(pSixAxis cache);
 #endif
