@@ -76,5 +76,6 @@ void MPU6050_getStructData(pSixAxis cache) {
     cache->aZ = (float)MPU_GetData(ACCEL_ZOUT_H)/1671.83f;
 
     cache->aY += A_Y_OFFSET;
+    cache->gX += G_X_OFFSET;
 
 }

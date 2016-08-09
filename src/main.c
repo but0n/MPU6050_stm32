@@ -14,14 +14,18 @@ float q0 = 1, q1 = 0, q2 = 0, q3 = 0;   //Quaternion
 float exInt = 0, eyInt = 0, ezInt = 0;
 float Yaw, Pitch, Roll;     //eular
 
-#define K_P 0.2f
+#define K_P 0.257f
 #define K_I 0
 #define K_D 0
+#define SUM_ERRO_MAX 800
+#define SUM_ERRO_MIN -800
 float iErro, sumErro = 0;
-short pid(float setPoint) {
+short pid(float setPoint, float d) {
     iErro = Roll - setPoint;
     sumErro += iErro;
-    return (short)(iErro * K_P + sumErro * K_I);
+    if(sumErro > SUM_ERRO_MAX) sumErro = SUM_ERRO_MAX;
+    if(sumErro < SUM_ERRO_MIN) sumErro = SUM_ERRO_MIN;
+    return (short)(iErro * K_P + sumErro * K_I + d * K_D);
 }
 
 //ms
@@ -203,11 +207,11 @@ int main() {
         MPU6050_getStructData(&sourceData);
         Comput(sourceData);
 
-        motorVal += pid(0);
+        motorVal += pid(0, sourceData.gX);
         if(motorVal > 7199) motorVal = 7199;
-        else if(motorVal < 1000) motorVal = 1000;
+        else if(motorVal < 800) motorVal = 800;
         MOTOR1 = (unsigned short)motorVal;
-        Float2Char((float)pid(0));
+        Float2Char((float)pid(0, sourceData.gX));
         sendData_uart(' ');
         sendData_uart('M');
         sendData_uart(':');
@@ -218,6 +222,11 @@ int main() {
         sendData_uart('r');
         sendData_uart(':');
         Float2Char(Roll);
+
+        sendData_uart(' ');
+        sendData_uart('D');
+        sendData_uart(':');
+        Float2Char(sourceData.gX);
         sendData_uart(0x0D);
         sendData_uart(0x0A);
 
