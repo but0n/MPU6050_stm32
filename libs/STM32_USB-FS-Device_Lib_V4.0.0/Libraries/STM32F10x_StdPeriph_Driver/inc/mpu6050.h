@@ -42,15 +42,15 @@ void delay(volatile unsigned int count);
 #define A_Y_OFFSET 11
 
 
-struct SixAxis{
+typedef struct{
     float gX;
     float gY;
     float gZ;
     float aX;
     float aY;
     float aZ;
-};
-typedef struct SixAxis* pSixAxis;
+}SixAxis;
+typedef SixAxis* pSixAxis;
 
 
 void initLED();
