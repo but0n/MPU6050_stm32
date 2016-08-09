@@ -14,11 +14,13 @@ float q0 = 1, q1 = 0, q2 = 0, q3 = 0;   //Quaternion
 float exInt = 0, eyInt = 0, ezInt = 0;
 float Yaw, Pitch, Roll;     //eular
 
-#define K_P 0.257f
+#define K_P 0.255f //0.257 * 0.83
 #define K_I 0
 #define K_D 0
-#define SUM_ERRO_MAX 800
-#define SUM_ERRO_MIN -800
+#define SUM_ERRO_MAX 900
+#define SUM_ERRO_MIN -900
+
+
 float iErro, sumErro = 0;
 short pid(float setPoint, float d) {
     iErro = Roll - setPoint;
@@ -201,7 +203,7 @@ int main() {
 
     SixAxis sourceData;
 
-    short motorVal = 3000;
+    short motorVal = 7000;
 
     while(1) {
         MPU6050_getStructData(&sourceData);
