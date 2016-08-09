@@ -41,10 +41,10 @@ tshow:
 		@echo "=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_"
 
 flash:
-	sudo stm32flash -w $(TOP)/main.bin -v -g 0 /dev/ttyUSB0
+	stm32flash -w $(TOP)/main.bin -v -g 0 /dev/tty.SLAB_USBtoUART
 dump:
 	arm-none-eabi-objdump -D main.elf > DUMP.s
 	open DUMP.s
 	say "Bazinga"
 tty:
-	sudo screen /dev/ttyUSB0 115200
+	screen /dev/tty.SLAB_USBtoUART 115200
