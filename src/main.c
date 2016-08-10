@@ -203,14 +203,14 @@ int main() {
 
     SixAxis sourceData;
 
-    short motorVal = 7000;
+    unsigned short motorVal = 7199;
 
     while(1) {
         MPU6050_getStructData(&sourceData);
         Comput(sourceData);
 
         motorVal += pid(0, sourceData.gX);
-        if(motorVal > 7200) motorVal = 7200;
+        if(motorVal > 7199) motorVal = 7199;
         else if(motorVal < 800) motorVal = 800;
         MOTOR1 = (unsigned short)motorVal;
         Float2Char((float)pid(0, sourceData.gX));
