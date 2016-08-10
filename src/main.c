@@ -195,7 +195,7 @@ int main() {
 
     initLED();
 
-    PWM_Init(7199,9);
+    PWM_Init(7200,10);
 
     initUART(72, 115200);
 
@@ -210,7 +210,7 @@ int main() {
         Comput(sourceData);
 
         motorVal += pid(0, sourceData.gX);
-        if(motorVal > 7199) motorVal = 7199;
+        if(motorVal > 7200) motorVal = 7200;
         else if(motorVal < 800) motorVal = 800;
         MOTOR1 = (unsigned short)motorVal;
         Float2Char((float)pid(0, sourceData.gX));
