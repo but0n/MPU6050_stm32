@@ -23,11 +23,11 @@ float Yaw, Pitch, Roll;     //eular
 
 float iErro, sumErro = 0;
 short pid(float setPoint, float d) {
-    iErro = Roll - setPoint;
-    sumErro += iErro;
-    if(sumErro > SUM_ERRO_MAX) sumErro = SUM_ERRO_MAX;
-    if(sumErro < SUM_ERRO_MIN) sumErro = SUM_ERRO_MIN;
-    return (short)(iErro * K_P + sumErro * K_I + d * K_D);
+    iErro = Roll - setPoint;    //计算当前误差
+    sumErro += iErro;       //对误差进行积分
+    if(sumErro > SUM_ERRO_MAX) sumErro = SUM_ERRO_MAX;  //积分限幅
+    else if(sumErro < SUM_ERRO_MIN) sumErro = SUM_ERRO_MIN;
+    return (short)(iErro * K_P + sumErro * K_I + d * K_D);  //PID输出
 }
 
 //ms
@@ -44,8 +44,8 @@ void initUART(unsigned int pclk2, unsigned int bound) {
     fraction = (temp - mantissa) * 16;
     mantissa <<= 4;
     mantissa += fraction;
-    RCC->APB2ENR |= 1<<2;
-    RCC->APB2ENR |= 1<<14;
+    RCC->APB2ENR |= 1<<2;   //GPIOA Enable
+    RCC->APB2ENR |= 1<<14;  //USART1 Enable
 
     GPIOA->CRH &= 0xFFFFF00F;
     GPIOA->CRH |= 0x000008B0;
@@ -79,7 +79,7 @@ void showData(short k) {
     sendData_uart(c+0x30);
     sendData_uart(d+0x30);
     sendData_uart(e+0x30);
-    sendData_uart('.');
+    sendData_uart(' ');
 }
 
 unsigned char Float2Char(float value) {
