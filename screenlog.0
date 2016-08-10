@@ -1,26 +1,0 @@
-[1m[3m%[23m[1m[0m                                                                                             k..opment_on_Mac\[0m[23m[24m[J[01;32m➜  [36mstm32_development_on_Mac[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004hcclear[?1l>[?2004l
-kclear\[H[J[1m[3m%[23m[1m[0m                                                                                             k..opment_on_Mac\[0m[23m[24m[J[01;32m➜  [36mstm32_development_on_Mac[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004hl[?1l>[?2004l
-kl\total 180K
-drwxr-xr-x  5 but0n but0n 4.0K Jul 29 05:22 [0m[01;34m.[0m
-drwxr-xr-x 14 but0n but0n 4.0K Jul 29 05:22 [01;34m..[0m
--rw-r--r--  1 but0n but0n  544 Jul 25 08:48 do_flash.pl
-drwxr-xr-x  8 but0n but0n 4.0K Jul 29 05:22 [01;34m.git[0m
-drwxr-xr-x  3 but0n but0n 4.0K Jul 29 05:20 [01;34mlibs[0m
--rw-r--r--  1 but0n but0n 5.0K Jul 25 08:48 linker.ld
--rwxrwxr-x  1 but0n but0n 3.1K Jul 29 05:21 [01;32mmain.bin[0m
--rwxrwxr-x  1 but0n but0n 145K Jul 29 05:21 [01;32mmain.elf[0m
--rw-rw-r--  1 but0n but0n 8.6K Jul 29 05:21 main.hex
--rw-rw-r--  1 but0n but0n  54K Jul 29 05:21 main.info_code
--rw-rw-r--  1 but0n but0n  15K Jul 29 05:21 main.info_elf
--rw-rw-r--  1 but0n but0n  147 Jul 29 05:21 main.info_size
--rw-rw-r--  1 but0n but0n 3.8K Jul 29 05:21 main.info_symbol
--rw-r--r--  1 but0n but0n 1.5K Jul 26 01:24 Makefile
--rw-r--r--  1 but0n but0n 3.8K Jul 26 00:44 Makefile.common
--rw-r--r--  1 but0n but0n  170 Jul 25 08:48 openjtag.cfg
--rw-r--r--  1 but0n but0n 2.8K Jul 25 08:48 openocd.cfg
--rw-r--r--  1 but0n but0n  867 Jul 25 08:48 README.md
--rw-rw-r--  1 but0n but0n    0 Jul 29 05:22 screenlog.0
-drwxr-xr-x  2 but0n but0n 4.0K Jul 29 05:20 [01;34msrc[0m
--rw-r--r--  1 but0n but0n 2.2K Jul 25 08:48 stm32f1x.cfg
-[1m[3m%[23m[1m[0m                                                                                             k..opment_on_Mac\[0m[23m[24m[J[01;32m➜  [36mstm32_development_on_Mac[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004hssudo halt[?1l>[?2004l
-khalt\[sudo] password for but0n: 
