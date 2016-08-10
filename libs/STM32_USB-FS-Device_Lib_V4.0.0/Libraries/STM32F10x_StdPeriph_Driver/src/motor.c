@@ -3,7 +3,7 @@
 
 //A7
 void PWM_Init(unsigned short arr, unsigned short psc) {
-    RCC->APB1ENR |= 1<<1;       //IO复用 enable
+    RCC->APB1ENR |= 1<<1;       //TIM3 enable
     RCC->APB2ENR |= 1<<2;       //GPIOA enable
     GPIOA->CRL &= 0x0FFFFFFF;
     GPIOA->CRL |= 0xB0000000;   //复用推挽输出
