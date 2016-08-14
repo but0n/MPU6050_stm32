@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/but0n/MPU6050_stm32.png)](https://travis-ci.org/but0n/MPU6050_stm32)
 # Screen Shot
 
 ![](IMG/tty.png)
