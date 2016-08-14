@@ -2,6 +2,10 @@
 # Screen Shot
 
 ![](IMG/tty.png)
+Euler Angles Output
+* Pitch
+* Roll
+* Yaw
 
 ```
 #define SCL BIT_ADDR((GPIOB_BASE+12), 15)
