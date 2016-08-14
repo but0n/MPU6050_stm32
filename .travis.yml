@@ -1,7 +1,6 @@
 os: osx
 osx_image: xcode
 language: c
-sudo: required
 before_install:
     - brew update
     - brew install coreutils
